@@ -7,8 +7,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import  VendorStack from './stacks/VendorStack';
-import  DemoStack from './stacks/DemoStack';
+import VendorStack from './stacks/VendorStack';
+import DemoStack from './stacks/DemoStack';
+import TransactionStack from './stacks/TransactionStack';
 
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -34,8 +35,9 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Tab.Navigator>
-        <Tab.Screen name="Vendor" component={VendorStack} options={{ headerShown: false }}/>
-        <Tab.Screen name="Demo" component={DemoStack} options={{ headerShown: false }}/>
+        <Tab.Screen name="Trans" component={TransactionStack} options={{ headerShown: false }} />
+        <Tab.Screen name="Vendor" component={VendorStack} options={{ headerShown: false }} />
+        <Tab.Screen name="Demo" component={DemoStack} options={{ headerShown: false }} />
       </Tab.Navigator>
       <StatusBar style="auto" />
     </ThemeProvider>
