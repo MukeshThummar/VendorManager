@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { View, Button, TouchableOpacity, FlatList, Text, StyleSheet } from 'react-native';
-import { addVendor, updateVendor, deleteVendor, getVendors } from '../../services/vendorService';
+import { deleteVendor, getVendors } from '../../services/vendorService';
 
 const VendorPage = () => {
   const navigation = useNavigation();
 
   const [vendors, setVendors] = useState([]);
-  const [vendorName, setVendorName] = useState('');
-  const [defaultRate, setDefaultRate] = useState('');
-
+  
   useFocusEffect(
     React.useCallback(() => {
       loadVendors();
@@ -18,11 +16,6 @@ const VendorPage = () => {
   const loadVendors = async () => {
     const result = await getVendors().catch(error => { console.error('Error getting vendors:', error); });
     setVendors(result);
-  };
-
-  const resetControls = () => {
-    setVendorName('');
-    setDefaultRate('');
   };
 
   const handleDeleteVendor = async (vendorId) => {
