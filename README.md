@@ -48,3 +48,35 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+
+
+## File Structure
+
+/VendorManager
+│
+├── /assets
+├── /components
+│   ├── VendorPage.js
+│   ├── DailyTransactionPage.js
+│   └── ReportPage.js
+├── /services
+│   ├── dbService.js
+│   ├── vendorService.js
+│   ├── transactionService.js
+│   └── reportService.js
+├── App.js
+└── /utils
+    └── utils.js
+
+npx create-expo-app@latest VendorManager
+cd VendorManager
+npx expo install sqlite3 react-native-pdf react-native-datepicker
+npm install @react-navigation/native @react-navigation/stack react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated
+npx expo install expo-print
+npx expo install expo-sqlite
+npm install react-native-fs react-native-sqlite-storage
+npm install @react-native-picker/picker
+npm install @react-native-community/datetimepicker
+
+npm start -- --reset-cache
