@@ -1,20 +1,19 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 // import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import NotFoundScreen from './+not-found';
-import VendorPage from './pages/VendorPage';
-import VendorAddPage from './pages/VendorAddPage';
-import Demo from './pages/Demo';
+import  VendorStack from './stacks/VendorStack';
+import  DemoStack from './stacks/DemoStack';
+
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -34,12 +33,10 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack.Navigator initialRouteName="Vendor">
-        <Stack.Screen name="Vendor" component={VendorPage} options={{ headerShown: false }} />
-        <Stack.Screen name="VendorAdd" component={VendorAddPage} options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" component={NotFoundScreen} />
-        <Stack.Screen name="Demo" component={Demo} />
-      </Stack.Navigator>
+      <Tab.Navigator>
+        <Tab.Screen name="Vendor" component={VendorStack} options={{ headerShown: false }}/>
+        <Tab.Screen name="Demo" component={DemoStack} options={{ headerShown: false }}/>
+      </Tab.Navigator>
       <StatusBar style="auto" />
     </ThemeProvider>
   );
