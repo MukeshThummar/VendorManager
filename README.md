@@ -69,6 +69,8 @@ Join our community of developers creating universal apps.
 └── /utils
     └── utils.js
 
+## To create new project and add dependancies
+```bash
 npx create-expo-app@latest VendorManager
 cd VendorManager
 npx expo install sqlite3 react-native-pdf react-native-datepicker
@@ -78,9 +80,11 @@ npx expo install expo-sqlite
 npm install react-native-fs react-native-sqlite-storage
 npm install @react-native-picker/picker
 npm install @react-native-community/datetimepicker
-
+```
+## To reset cache and build
+```bash
 npm start -- --reset-cache
-
+```
 
 # TODO
 1. App 
