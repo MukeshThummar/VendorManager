@@ -1,7 +1,9 @@
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 
 const Demo = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -61,7 +63,10 @@ const Demo = () => {
       </ScrollView>
 
       {/* Floating Button */}
-      <TouchableOpacity style={styles.fab}>
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => navigation.navigate('DemoDet')}
+      >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
     </View>
