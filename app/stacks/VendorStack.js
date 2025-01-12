@@ -7,8 +7,8 @@ const Stack = createStackNavigator();
 
 const VendorStack = () => (
     <Stack.Navigator initialRouteName="Vendor">
-        <Stack.Screen name="Vendor" component={VendorPage} options={{ headerShown: false }} />
-        <Stack.Screen name="VendorAdd" component={VendorAddPage} options={{ headerShown: false }} />
+        <Stack.Screen name="Vendor" component={VendorPage} options={{ headerShown: true, title: "Vendors" }} />
+        <Stack.Screen name="VendorAdd" component={VendorAddPage} options={{ headerShown: true, title:"Add Vendor" }} />
         <Stack.Screen name="+not-found" component={NotFoundScreen} />
     </Stack.Navigator>
 );
