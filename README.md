@@ -80,3 +80,41 @@ npm install @react-native-picker/picker
 npm install @react-native-community/datetimepicker
 
 npm start -- --reset-cache
+
+
+# TODO
+1. App 
+   Tabs - Trans Vendor Report More
+   Navigation - 
+   
+2. Vendor
+   List - 
+      UI - Design
+      Fields - Name Rate - 
+      Buttons -Add Edit Delete - 
+   Add - 
+      UI - Design
+      Fields - Name Rate
+      Buttons - Save Back
+   Edit 
+      UI - Design
+      Fields - Name Rate
+      Buttons - Update Delete Back
+   Delete - Confirm Alert
+3. Transaction
+   List
+      UI - Design
+      Fields - 
+      Buttons - Add Edit
+   Add
+      UI - Design
+      Fields -
+      Buttons - Save Back
+   Edit
+      UI - Design
+      Fields -
+      Buttons - Update Delete Back
+         Delete - Confirm Alert
+4. Reports
+      View Reports
+      Export Reports
