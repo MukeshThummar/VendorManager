@@ -19,7 +19,7 @@ const deleteTransaction = async transactionId => {
 };
 
 const getTransactions = async () => {
-  return await getData('SELECT t.transactionId, v.vendor, t.date, t.qty, t.rate, t.amount, t.description FROM transactions t JOIN vendors v ON t.vendorid = v.vendorid;').catch(error => { console.error('Error getting transactions:', error); });
+  return await getData('SELECT t.transactionId, v.vendorId, v.vendor, t.date, t.qty, t.rate, t.amount, t.description FROM transactions t JOIN vendors v ON t.vendorid = v.vendorid;').catch(error => { console.error('Error getting transactions:', error); });
 };
 
 export { addTransaction, updateTransaction, deleteTransaction, getTransactions };
