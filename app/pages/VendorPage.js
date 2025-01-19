@@ -55,7 +55,7 @@ const VendorPage = () => {
                   onPress={() => navigateToEdit(item)}
                 >
                   <Text style={styles.transactionText}>{item.vendor}</Text>
-                  <Text style={styles.transactionAmount}>{item.defaultRate}</Text>
+                  <Text style={styles.transactionAmount}>Default Rate: {item.defaultRate}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.deleteButton}
@@ -122,8 +122,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#1c1c1e',
   },
   transactionList: {
-    borderTopWidth: 1,
-    borderTopColor: '#3a3a3c',
+    // borderTopWidth: 1,
+    // borderTopColor: '#3a3a3c',
   },
   transaction: {
     flexDirection: 'row',
@@ -132,10 +132,18 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#3a3a3c',
   },
+  transactionInfo: {
+    flex: 1,
+  },
   transactionText: {
     color: '#fff',
+    fontSize: 16,
   },
   transactionAmount: {
     color: '#ff3b30',
+    fontSize: 12,
+  },
+  deleteButton: {
+    marginLeft: 16,
   },
 });

@@ -23,13 +23,14 @@ const VendorAddPage = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Add Vendor</Text>
+      {/* <Text style={styles.header}>Add Vendor</Text> */}
       <View style={styles.form}>
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Vendor</Text>
           <TextInput
             style={styles.textInput}
-            placeholder="Vendor Name"
+            placeholder="Name of Vendor"
+            placeholderTextColor="#B0B0B0"
             value={vendorName}
             onChangeText={setVendorName}
           />
@@ -38,8 +39,8 @@ const VendorAddPage = ({ navigation }) => {
           <Text style={styles.label}>Default Rate</Text>
           <TextInput
             style={styles.textInput}
-            placeholder="Default Rate"
-            placeholderTextColor="#000"
+            placeholder="0.00"
+            placeholderTextColor="#B0B0B0"
             keyboardType="numeric"
             value={defaultRate}
             onChangeText={setDefaultRate}
