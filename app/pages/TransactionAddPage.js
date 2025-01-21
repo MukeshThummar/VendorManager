@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Text, TextInput, Button, View, StyleSheet } from 'react-native';
+import { Text, TextInput, Button, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; // Picker import
 import DateTimePicker from '@react-native-community/datetimepicker'; // DateTimePicker import
-import { addTransaction, updateTransaction, deleteTransaction, getTransactions } from  '../../services/transactionService';
+import { addTransaction, updateTransaction, deleteTransaction, getTransactions } from '../../services/transactionService';
 import { getVendors } from '../../services/vendorService';
 
 const TransactionAddPage = ({ navigation, route }) => {
@@ -15,7 +15,7 @@ const TransactionAddPage = ({ navigation, route }) => {
   const [vendors, setVendors] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Define the async function inside useEffect
@@ -35,7 +35,7 @@ const TransactionAddPage = ({ navigation, route }) => {
   }, []);
 
 
-  const handleSave = async() => {
+  const handleSave = async () => {
     const calculatedAmount = parseFloat(qty) * parseFloat(rate);
     setAmount(calculatedAmount.toFixed(2));
     if (route?.params?.id) {
@@ -63,7 +63,7 @@ const TransactionAddPage = ({ navigation, route }) => {
   const showDatePickerHandler = () => {
     setShowDatePicker(true);
   };
-  
+
   const formatDate = (date) => {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -73,52 +73,88 @@ const TransactionAddPage = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      {/* loading ? <Text>Loading vendors...</Text> */}
-      <Picker 
-        style={styles.input}  
-        selectedValue={vendorId} onValueChange={(itemValue) => {
-          setVendorId(itemValue);
-        }}>
-        <Picker.Item label="Select a Vendor" value="" enabled={false} />
-        {vendors.map((vendor) => (
-          <Picker.Item label={vendor.vendor} value={vendor.vendorId} key={vendor.vendorId} />
-        ))}
-      </Picker>
+      <View style={styles.form}>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Vendor</Text>
+          <Picker
+            style={styles.textPicker}
+            selectedValue={vendorId} onValueChange={(itemValue) => {
+              setVendorId(itemValue);
+            }}>
+            <Picker.Item label="Select a Vendor" value="" enabled={false} />
+            {vendors.map((vendor) => (
+              <Picker.Item label={vendor.vendor} value={vendor.vendorId} key={vendor.vendorId} />
+            ))}
+          </Picker>
+        </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Date</Text>
+          <TouchableOpacity style={styles.dateInput} onPress={showDatePickerHandler}>
+            <Text style={styles.textInput}>{formatDate(date)}</Text>
+          </TouchableOpacity>
+          {showDatePicker && (
+            <DateTimePicker
+              value={date}
+              mode="date"
+              display="default"
+              onChange={handleDateChange}
+            />
+          )}
+        </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Quantity</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="0.00"
+            placeholderTextColor="#B0B0B0"
+            value={qty}
+            onChangeText={setQty}
+            keyboardType="numeric"
+          />
+        </View>
 
-      {/* Date picker */}
-      <Button onPress={showDatePickerHandler} title="Select Date" />
-      {showDatePicker && (
-        <DateTimePicker
-          style={styles.input}  
-          value={date}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-        />
-      )}
-      <Text style={styles.input}>Selected Date: {formatDate(date)}</Text>
-      <TextInput
-        style={styles.input}  
-        placeholder="Quantity"
-        value={qty}
-        onChangeText={setQty}
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}  
-        placeholder="Rate"
-        value={rate}
-        onChangeText={setRate}
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}  
-        placeholder="Description"
-        value={description}
-        onChangeText={setDescription}
-      />
-      <Button title="Save" onPress={handleSave} />
-      <Button title="Back" onPress={handleBacktoList} />
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Rate</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="0.00"
+            placeholderTextColor="#B0B0B0"
+            value={rate}
+            onChangeText={setRate}
+            keyboardType="numeric"
+          />
+        </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Amount</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="0.00"
+            placeholderTextColor="#B0B0B0"
+            value={amount}
+            onChangeText={setAmount}
+            keyboardType="numeric"
+            editable={false}
+          />
+        </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Description</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Description"
+            placeholderTextColor="#B0B0B0"
+            value={description}
+            onChangeText={setDescription}
+          />
+        </View>
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+          <Text style={styles.buttonText}>Save</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.continueButton} onPress={handleBacktoList}>
+          <Text style={styles.buttonText}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -129,16 +165,70 @@ export default TransactionAddPage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    backgroundColor: '#1E1E1E',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
   },
-  input: {
-    color: '#ffffff',
-    backgroundColor: '#333',
-    borderColor: '#ccc',
-    borderWidth: 1,
-    marginTop: 10,
-    paddingLeft: 10,
-    //lineHeight: 24,
-    fontSize: 16,
+  header: {
+    fontSize: 20,
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  form: {
+    backgroundColor: '#2E2E2E',
+    borderRadius: 10,
+    padding: 15,
+  },
+  inputGroup: {
+    marginBottom: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderBottomColor: '#444',
+    borderBottomWidth: 1,
+  },
+  label: {
+    flex: 1,
+    fontSize: 12,
+    color: '#B0B0B0',
+    marginTop: 5,
+    padding: 5,
+  },
+  dateInput: {
+    flex: 2,
+    marginTop: 5,
+  },
+  textInput: {
+    flex: 2,
+    color: '#FFFFFF',
+  },
+  textPicker: {
+    flex: 2,
+    marginTop: 5,
+    color: '#FFFFFF',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
+  saveButton: {
+    backgroundColor: '#FF5A5F',
+    flex: 1,
+    marginRight: 10,
+    padding: 15,
+    borderRadius: 5,
+  },
+  continueButton: {
+    backgroundColor: '#444',
+    flex: 1,
+    marginLeft: 10,
+    padding: 15,
+    borderRadius: 5,
+  },
+  buttonText: {
+    textAlign: 'center',
+    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
 });

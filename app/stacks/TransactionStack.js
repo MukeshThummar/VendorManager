@@ -7,8 +7,8 @@ const Stack = createStackNavigator();
 
 const TransactionStack = () => (
     <Stack.Navigator initialRouteName="Transaction">
-        <Stack.Screen name="Transaction" component={TransactionPage} options={{ headerShown: false }} />
-        <Stack.Screen name="TransactionAdd" component={TransactionAddPage} options={{ headerShown: false }} />
+        <Stack.Screen name="Transaction" component={TransactionPage} options={{ headerShown: false, title: "Transaction" }} />
+        <Stack.Screen name="TransactionAdd" component={TransactionAddPage} options={{ headerShown: true, title: "Add Transaction" }} />
         <Stack.Screen name="+not-found" component={NotFoundScreen} />
     </Stack.Navigator>
 );
