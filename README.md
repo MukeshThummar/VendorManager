@@ -80,6 +80,7 @@ npx expo install expo-sqlite
 npm install react-native-fs react-native-sqlite-storage
 npm install @react-native-picker/picker
 npm install @react-native-community/datetimepicker
+npm install react-native-vector-icons
 ```
 ## To reset cache and build
 ```bash
