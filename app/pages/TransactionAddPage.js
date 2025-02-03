@@ -1,58 +1,80 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Text, TextInput, Button, View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Picker } from '@react-native-picker/picker'; // Picker import
 import DateTimePicker from '@react-native-community/datetimepicker'; // DateTimePicker import
 import { addTransaction, updateTransaction, deleteTransaction, getTransactions } from '../../services/transactionService';
-import { getVendors } from '../../services/vendorService';
+import { getDate, getformatedDatefromDate } from '@/constants/methods';
 
 const TransactionAddPage = ({ navigation, route }) => {
   const [vendorId, setVendorId] = useState('');
-  const [date, setDate] = useState(new Date());
+  const [vendor, setVendor] = useState('');
+  const [trndate, setDate] = useState(new Date());
   const [qty, setQty] = useState('');
   const [rate, setRate] = useState('');
   const [amount, setAmount] = useState('');
+
   const [description, setDescription] = useState('');
-  const [vendors, setVendors] = useState([]);
-  const [transactions, setTransactions] = useState([]);
+  const [transaction, setTransaction] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [loading, setLoading] = useState(true);
+  const inputRef = useRef(null);
 
   useEffect(() => {
-    // Define the async function inside useEffect
     const fetchData = async () => {
       try {
-        const vendorsList = await getVendors();
-        setVendors(vendorsList);
-
+        if (route?.params?.transaction) {
+          const trn = route.params.transaction;
+          setTransaction(trn);
+          setVendorId(trn.vendorId);
+          setDate(getDate(trn.trndate));
+          setQty(trn.qty.toString());
+          setRate(trn.rate.toString());
+          setAmount(trn.amount.toString());
+          setDescription(trn.description);
+          const vendor = route?.params?.vendor;
+          setVendor(vendor);
+        } else if (route?.params?.vendor) {
+          const vendor = route.params.vendor;
+          setVendorId(vendor.vendorId);
+          setVendor(vendor);
+          setRate(vendor.defaultRate.toString());
+          setDate(route?.params?.trndate ? getDate(route.params.trndate) : new Date());
+        } else {
+          setVendorId(route?.params?.vendorId || '');
+          setDate(route?.params?.trndate ? getDate(route.params.trndate) : new Date());
+        }
       } catch (error) {
-        console.error('Error fetching vendors:', error); // Handle any errors
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
-  }, []);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 500);
+  }, [route.params]);
 
+  const calculateAmount = (rate, quantity) => {
+    const total = (parseFloat(rate) || 0) * (parseFloat(quantity) || 0);
+    setAmount(total.toFixed(2)); // Format amount
+  };
 
   const handleSave = async () => {
-    const calculatedAmount = parseFloat(qty) * parseFloat(rate);
-    setAmount(calculatedAmount.toFixed(2));
-    if (route?.params?.id) {
-      await updateTransaction(route.params.id, vendorId, date, qty, rate, calculatedAmount, description);
+    // const calculatedAmount = parseFloat(qty) * parseFloat(rate);
+    // setAmount(calculatedAmount.toFixed(2));
+    if (transaction?.transactionId) {
+      await updateTransaction(transaction.transactionId, vendorId, getformatedDatefromDate(trndate), qty, rate, amount, description);
     } else {
-      console.log('Adding transaction:', vendorId, formatDate(date), qty, rate, calculatedAmount, description);
-      await addTransaction(vendorId, formatDate(date), qty, rate, calculatedAmount, description);
+      console.log('Adding transaction:', vendorId, getformatedDatefromDate(trndate), qty, rate, amount, description);
+      await addTransaction(vendorId, getformatedDatefromDate(trndate), qty, rate, amount, description);
     }
 
     if (route.params?.refreshList) {
       route.params.refreshList();
     }
-    //resetControls();
     navigation.goBack();
   };
   const handleBacktoList = async () => {
-    //resetControls();
     navigation.goBack();
   };
   const handleDateChange = (event, selectedDate) => {
@@ -64,37 +86,21 @@ const TransactionAddPage = ({ navigation, route }) => {
     setShowDatePicker(true);
   };
 
-  const formatDate = (date) => {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.form}>
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Vendor</Text>
-          <Picker
-            style={styles.textPicker}
-            selectedValue={vendorId} onValueChange={(itemValue) => {
-              setVendorId(itemValue);
-            }}>
-            <Picker.Item label="Select a Vendor" value="" enabled={false} />
-            {vendors.map((vendor) => (
-              <Picker.Item label={vendor.vendor} value={vendor.vendorId} key={vendor.vendorId} />
-            ))}
-          </Picker>
+          <Text style={styles.textInput}>{vendor.vendor}</Text>
         </View>
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Date</Text>
           <TouchableOpacity style={styles.dateInput} onPress={showDatePickerHandler}>
-            <Text style={styles.textInput}>{formatDate(date)}</Text>
+            <Text style={styles.textInput}>{getformatedDatefromDate(trndate)}</Text>
           </TouchableOpacity>
           {showDatePicker && (
             <DateTimePicker
-              value={date}
+              value={trndate}
               mode="date"
               display="default"
               onChange={handleDateChange}
@@ -104,11 +110,20 @@ const TransactionAddPage = ({ navigation, route }) => {
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Quantity</Text>
           <TextInput
+            ref={inputRef}
             style={styles.textInput}
             placeholder="0.00"
             placeholderTextColor="#B0B0B0"
             value={qty}
-            onChangeText={setQty}
+            onChangeText={(text) => {
+              const sanitizedText = text.replace(/[^0-9.]/g, ""); // Remove unwanted characters
+              const decimalCount = (sanitizedText.match(/\./g) || []).length;
+              // Prevent multiple decimal points
+              if (decimalCount > 1) return;
+          
+              setQty(sanitizedText);
+              calculateAmount(rate, sanitizedText);
+            }}
             keyboardType="numeric"
           />
         </View>
@@ -120,7 +135,10 @@ const TransactionAddPage = ({ navigation, route }) => {
             placeholder="0.00"
             placeholderTextColor="#B0B0B0"
             value={rate}
-            onChangeText={setRate}
+            onChangeText={(text) => {
+              setRate(text);
+              calculateAmount(text, qty);
+            }}
             keyboardType="numeric"
           />
         </View>

@@ -3,25 +3,22 @@ import { Text, Button, View, TouchableOpacity, FlatList, StyleSheet, ScrollView 
 import { Picker } from '@react-native-picker/picker'; // Picker import
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { addTransaction, updateTransaction, deleteTransaction, getTransactions } from '../../services/transactionService';
-import { getVendors } from '../../services/vendorService';
+import { getDate, getformatedDate } from '@/constants/methods';
 
-
-
-const TransactionPage = () => {
-  const navigation = useNavigation();
+const TransactionPage = ({ navigation, route }) => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [vendors, setVendors] = useState([]);
-  const [vendorId, setVendorId] = useState('');
+  const [vendor, setVendor] = useState('');
   const [selectedMonth, setSelectedMonth] = useState(`${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}`);
 
   useEffect(() => {
     // Define the async function inside useEffect
     const fetchData = async () => {
       try {
-        const vendorsList = await getVendors();
-        setVendors(vendorsList);
-
+        if (route?.params?.vendor) {
+          const vendor = route.params.vendor;
+          setVendor(vendor);
+        }
       } catch (error) {
         console.error('Error fetching vendors:', error); // Handle any errors
       } finally {
@@ -40,16 +37,15 @@ const TransactionPage = () => {
           setTransactions(transactionsList); // Set transactions state
 
         } catch (error) {
-          console.error('Error fetching vendors:', error); // Handle any errors
+          console.error('Error fetching transaction:', error); // Handle any errors
         } finally {
           setLoading(false);
         }
       };
-
       fetchData();
     }, [])
   );
-
+  
   const generateMonths = () => {
     const months = [];
     const currentYear = new Date().getFullYear();
@@ -90,7 +86,13 @@ const TransactionPage = () => {
     return { month: monthIndex, year: parseInt(year, 10) };
   };
 
-  const filteredTransactions = vendorId === '' ? transactions : transactions.filter((transaction) => transaction.vendorId === vendorId);
+  const filteredTransactions = vendor.vendorId === ''
+    ? []
+    : transactions.filter((transaction) => {
+      const { month, year } = parseSelectedMonth(selectedMonth);
+      const transactionDate = getDate(transaction.trndate);
+      return transaction.vendorId === vendor.vendorId && transactionDate.getMonth() === month && transactionDate.getFullYear() === year;
+    });
 
   const SummaryView = () => {
     const totalQty = filteredTransactions.reduce((sum, transaction) => sum + parseFloat(transaction.qty), 0);
@@ -103,13 +105,6 @@ const TransactionPage = () => {
       </View>
     );
   };
-  const getformatedDate = (year, month, day) => {
-    const date = new Date(year, month, day);
-    const fday = date.getDate().toString().padStart(2, '0');
-    const fmonth = (date.getMonth() + 1).toString().padStart(2, '0');
-    const fyear = date.getFullYear();
-    return `${fday}/${fmonth}/${fyear}`;
-  };
 
   const renderCalendarDay = (day, isPlaceholder = false) => {
     if (isPlaceholder) {
@@ -118,18 +113,30 @@ const TransactionPage = () => {
 
     const { month, year } = parseSelectedMonth(selectedMonth);
     const formattedDate = getformatedDate(year, month, day);
-    const transaction = filteredTransactions?.find((t) => t.date === formattedDate);
+    const transaction = filteredTransactions?.find((t) => t.trndate === formattedDate);
     return (
-      <View style={styles.dayCell} key={`day-${day}`}>
-        <Text style={styles.dayText}>{day}</Text>
-        {transaction && (
-          <View style={styles.transactionDetails}>
-            <Text style={styles.qty}>Q.{transaction.qty.toFixed(2)}</Text>
-            <Text style={styles.rate}>₹{transaction.rate.toFixed(2)}</Text>
-            <Text style={styles.total}>₹{transaction.amount.toFixed(2)}</Text>
-          </View>
-        )}
-      </View>
+      <TouchableOpacity
+        key={`day-${day}`}
+        style={styles.dayCell}
+        onPress={() => {
+          if (transaction) {
+            navigation.navigate('TransactionAdd', { vendor, transaction });
+          } else {
+            navigation.navigate('TransactionAdd', { vendor, trndate: formattedDate });
+          }
+        }}
+      >
+        <View >
+          <Text style={styles.dayText}>{day}</Text>
+          {transaction && (
+            <View style={styles.transactionDetails}>
+              <Text style={styles.qty}>Q.{transaction.qty.toFixed(2)}</Text>
+              <Text style={styles.rate}>₹{transaction.rate.toFixed(2)}</Text>
+              <Text style={styles.total}>₹{transaction.amount.toFixed(2)}</Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
     );
   };
 
@@ -143,10 +150,10 @@ const TransactionPage = () => {
     const calendarDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
     const totalDays = [...blankDays, ...calendarDays];
-    const rows = [];
+    const weekrows = [];
     for (let i = 0; i < totalDays.length; i += 7) {
       const week = totalDays.slice(i, i + 7);
-      rows.push(week);
+      weekrows.push(week);
     }
 
     return (
@@ -160,7 +167,7 @@ const TransactionPage = () => {
 
         {/* Render calendar weeks */}
         <View style={styles.calendarGrid}>
-          {rows.map((week, index) => (
+          {weekrows.map((week, index) => (
             <View style={styles.weekRow} key={`week-${index}`}>
               {week.map((day, dayIndex) =>
                 day == null
@@ -174,57 +181,6 @@ const TransactionPage = () => {
     );
   };
 
-  useEffect(() => {
-    // Define the async function inside useEffect
-    const fetchData = async () => {
-      try {
-        const vendorsList = await getVendors();
-        setVendors(vendorsList);
-
-      } catch (error) {
-        console.error('Error fetching vendors:', error); // Handle any errors
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const fetchData = async () => {
-        try {
-          const transactionsList = await getTransactions();
-          setTransactions(transactionsList); // Set transactions state
-
-        } catch (error) {
-          console.error('Error fetching vendors:', error); // Handle any errors
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchData();
-    }, [])
-  );
-
-  const renderTransaction = ({ item }) => (
-    <View style={styles.item}>
-      <Text style={styles.gridcols}>{item.vendor}</Text>
-      <Text style={styles.gridcols}>{item.date}</Text>
-      <Text style={styles.gridcols}>{item.qty}</Text>
-      <Text style={styles.gridcols}>{item.rate}</Text>
-      <Text style={styles.gridcols}>{item.amount}</Text>
-      <Text style={styles.gridcols}>{item.description}</Text>
-      <View style={styles.actions}>
-        <Button title="Edit" onPress={() => console.log('Edit transaction')} />
-        <Button title="Delete" onPress={() => console.log('Delete transaction')} />
-      </View>
-    </View>
-  );
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -235,25 +191,16 @@ const TransactionPage = () => {
         <TouchableOpacity onPress={() => handleMonthChange('next')}>
           <Text style={styles.navButton}>{'>'}</Text>
         </TouchableOpacity>
+        <Text style={styles.monthYear}>{vendor.vendor}</Text>
       </View>
 
-      <Picker
-        style={styles.input}
-        selectedValue={vendorId} onValueChange={(itemValue) => {
-          setVendorId(itemValue);
-        }}>
-        <Picker.Item label="Select a Vendor" value="" enabled={false} />
-        {vendors.map((vendor) => (
-          <Picker.Item label={vendor.vendor} value={vendor.vendorId} key={vendor.vendorId} />
-        ))}
-      </Picker>
       {renderCalendar()}
       {SummaryView()}
       <View style={styles.container}>
 
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => navigation.navigate('TransactionAdd')}
+          onPress={() => navigation.navigate('TransactionAdd',{ vendor })}
         >
           <Text style={styles.addButtonText}>+</Text>
         </TouchableOpacity>
