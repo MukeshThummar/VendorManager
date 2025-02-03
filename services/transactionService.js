@@ -1,16 +1,16 @@
 import { executeSql, getData } from './dbService';
 
-const addTransaction = async (vendorId, date, qty, rate,amount, description) => {
+const addTransaction = async (vendorId, trndate, qty, rate,amount, description) => {
   return await executeSql(
-    'INSERT INTO transactions (vendorId, date, qty, rate, amount, description) VALUES (?, ?, ?, ?, ?, ?);',
-    [vendorId, date, qty, rate, amount, description]
+    'INSERT INTO transactions (vendorId, trndate, qty, rate, amount, description) VALUES (?, ?, ?, ?, ?, ?);',
+    [vendorId, trndate, qty, rate, amount, description]
   );
 };
 
-const updateTransaction = async (transactionId, vendorId, date, qty, rate,amount, description) => {
+const updateTransaction = async (transactionId, vendorId, trndate, qty, rate,amount, description) => {
   return await executeSql(
-    'UPDATE transactions SET vendorId = ?, date = ?, qty = ?, rate = ?, amount = ?, description = ? WHERE transactionId = ?;',
-    [vendorId, date, qty, rate, amount, description, transactionId]
+    'UPDATE transactions SET vendorId = ?, trndate = ?, qty = ?, rate = ?, amount = ?, description = ? WHERE transactionId = ?;',
+    [vendorId, trndate, qty, rate, amount, description, transactionId]
   );
 };
 
@@ -19,7 +19,7 @@ const deleteTransaction = async transactionId => {
 };
 
 const getTransactions = async () => {
-  return await getData('SELECT t.transactionId, v.vendorId, v.vendor, t.date, t.qty, t.rate, t.amount, t.description FROM transactions t JOIN vendors v ON t.vendorid = v.vendorid;').catch(error => { console.error('Error getting transactions:', error); });
+  return await getData('SELECT t.transactionId, v.vendorId, v.vendor, t.trndate, t.qty, t.rate, t.amount, t.description FROM transactions t JOIN vendors v ON t.vendorid = v.vendorid;').catch(error => { console.error('Error getting transactions:', error); });
 };
 
 export { addTransaction, updateTransaction, deleteTransaction, getTransactions };

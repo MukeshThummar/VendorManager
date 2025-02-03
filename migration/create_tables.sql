@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS vendors (
 
 CREATE TABLE IF NOT EXISTS transactions (
     transactionId INTEGER PRIMARY KEY AUTOINCREMENT, 
-    vendorId INTEGER, date TEXT, 
+    vendorId INTEGER, 
+    trndate DATE, 
     qty REAL, 
     rate REAL, 
     amount REAL, 

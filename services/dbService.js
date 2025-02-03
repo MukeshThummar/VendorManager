@@ -15,7 +15,7 @@ const db = SQLite.openDatabaseSync('vendor_manager.db');
 
 //     // Create transactions table
 //     await db.execAsync(
-//       'CREATE TABLE IF NOT EXISTS transactions (transactionId INTEGER PRIMARY KEY AUTOINCREMENT, vendorId INTEGER, date TEXT, qty REAL, rate REAL, amount REAL, description TEXT, FOREIGN KEY (vendorId) REFERENCES vendors (vendorId));'
+//       'CREATE TABLE IF NOT EXISTS transactions (transactionId INTEGER PRIMARY KEY AUTOINCREMENT, vendorId INTEGER, trndate TEXT, qty REAL, rate REAL, amount REAL, description TEXT, FOREIGN KEY (vendorId) REFERENCES vendors (vendorId));'
 //     );
 //   //});
 // }
