@@ -78,7 +78,6 @@ export default function RootLayout() {
       })}
       >
         <Tab.Screen name="Home" component={TransactionStack} options={{ headerShown: false }} />
-        <Tab.Screen name="Trans" component={TransactionStack} options={{ headerShown: false }} />
         <Tab.Screen name="Vendor" component={VendorStack} options={{ headerShown: false }} />
         <Tab.Screen name="Demo" component={DemoStack} options={{ headerShown: false }} />
       </Tab.Navigator>

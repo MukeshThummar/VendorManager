@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Text, Button, View, TouchableOpacity, FlatList, StyleSheet, ScrollView } from 'react-native';
-import { Picker } from '@react-native-picker/picker'; // Picker import
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { addTransaction, updateTransaction, deleteTransaction, getTransactions } from '../../services/transactionService';
-import { getDate, getformatedDate } from '@/constants/methods';
+import { useFocusEffect } from '@react-navigation/native';
+import { getTransactions } from '../../services/transactionService';
+import { getDate, getformatedDate, getDaysInMonth, getStartDayOfMonth } from '@/constants/methods';
 
 const TransactionPage = ({ navigation, route }) => {
   const [transactions, setTransactions] = useState([]);
@@ -69,14 +68,7 @@ const TransactionPage = ({ navigation, route }) => {
     }
   };
 
-  const getStartDayOfMonth = (month, year) => {
-    return new Date(year, month, 1).getDay();
-  };
-
-  const getDaysInMonth = (month, year) => {
-    return new Date(year, month + 1, 0).getDate();
-  };
-
+  
   const parseSelectedMonth = (selectedMonth) => {
     const [monthName, year] = selectedMonth.split(' ');
     const monthIndex = [
@@ -130,9 +122,9 @@ const TransactionPage = ({ navigation, route }) => {
           <Text style={styles.dayText}>{day}</Text>
           {transaction && (
             <View style={styles.transactionDetails}>
-              <Text style={styles.qty}>Q.{transaction.qty.toFixed(2)}</Text>
-              <Text style={styles.rate}>₹{transaction.rate.toFixed(2)}</Text>
-              <Text style={styles.total}>₹{transaction.amount.toFixed(2)}</Text>
+              <Text style={styles.qty}>Q.{parseFloat(transaction.qty).toFixed(2)}</Text>
+              <Text style={styles.rate}>₹{parseFloat(transaction.rate).toFixed(2)}</Text>
+              <Text style={styles.total}>₹{parseFloat(transaction.amount).toFixed(2)}</Text>
             </View>
           )}
         </View>

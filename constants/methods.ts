@@ -18,8 +18,18 @@ const getDate = (date: string) => {
     return new Date(date.split('/').reverse().join('-'));
 };
 
+const getStartDayOfMonth = (month: number, year: number) => {
+    return new Date(year, month, 1).getDay();
+};
+
+const getDaysInMonth = (month: number, year: number) => {
+    return new Date(year, month + 1, 0).getDate();
+};
+
 export {
     getDate,
     getformatedDate,
-    getformatedDatefromDate
+    getformatedDatefromDate,
+    getStartDayOfMonth,
+    getDaysInMonth
 };

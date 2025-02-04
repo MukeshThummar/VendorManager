@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, TextInput, Button, View, StyleSheet, TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker'; // DateTimePicker import
-import { addTransaction, updateTransaction, deleteTransaction, getTransactions } from '../../services/transactionService';
+import { addTransaction, updateTransaction, deleteTransaction } from '../../services/transactionService';
 import { getDate, getformatedDatefromDate } from '@/constants/methods';
 
 const TransactionAddPage = ({ navigation, route }) => {
   const [vendorId, setVendorId] = useState('');
   const [vendor, setVendor] = useState('');
   const [trndate, setDate] = useState(new Date());
-  const [qty, setQty] = useState('');
-  const [rate, setRate] = useState('');
-  const [amount, setAmount] = useState('');
+  const [qty, setQty] = useState(0);
+  const [rate, setRate] = useState(0);
+  const [amount, setAmount] = useState(0);
 
   const [description, setDescription] = useState('');
   const [transaction, setTransaction] = useState([]);
@@ -26,9 +26,9 @@ const TransactionAddPage = ({ navigation, route }) => {
           setTransaction(trn);
           setVendorId(trn.vendorId);
           setDate(getDate(trn.trndate));
-          setQty(trn.qty.toString());
-          setRate(trn.rate.toString());
-          setAmount(trn.amount.toString());
+          setQty(parseFloat(trn.qty).toString());
+          setRate(parseFloat(trn.rate).toString());
+          setAmount(parseFloat(trn.amount).toString());
           setDescription(trn.description);
           const vendor = route?.params?.vendor;
           setVendor(vendor);
@@ -36,7 +36,7 @@ const TransactionAddPage = ({ navigation, route }) => {
           const vendor = route.params.vendor;
           setVendorId(vendor.vendorId);
           setVendor(vendor);
-          setRate(vendor.defaultRate.toString());
+          setRate(vendor.defaultRate?.toString());
           setDate(route?.params?.trndate ? getDate(route.params.trndate) : new Date());
         } else {
           setVendorId(route?.params?.vendorId || '');
@@ -60,19 +60,38 @@ const TransactionAddPage = ({ navigation, route }) => {
   };
 
   const handleSave = async () => {
-    // const calculatedAmount = parseFloat(qty) * parseFloat(rate);
-    // setAmount(calculatedAmount.toFixed(2));
+    //TODO: Add validation
     if (transaction?.transactionId) {
-      await updateTransaction(transaction.transactionId, vendorId, getformatedDatefromDate(trndate), qty, rate, amount, description);
+      await updateTransaction(transaction.transactionId, vendorId, getformatedDatefromDate(trndate), qty, rate, amount, description).catch(error => { console.error('Error updating transaction:', error); });
     } else {
-      console.log('Adding transaction:', vendorId, getformatedDatefromDate(trndate), qty, rate, amount, description);
-      await addTransaction(vendorId, getformatedDatefromDate(trndate), qty, rate, amount, description);
+      await addTransaction(vendorId, getformatedDatefromDate(trndate), qty, rate, amount, description).catch(error => { console.error('Error adding transaction:', error); });
     }
 
     if (route.params?.refreshList) {
       route.params.refreshList();
     }
     navigation.goBack();
+  };
+
+  const handleDelete = async (transactionId) => {
+    Alert.alert(
+      'Delete Transaction',
+      'Are you sure you want to delete this transaction?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            await deleteTransaction(transactionId).catch(error => { console.error('Error deleting transaction:', error); });
+            if (route.params?.refreshList) {
+              route.params.refreshList();
+            }
+            navigation.goBack();
+          }
+        },
+      ]
+    );
   };
   const handleBacktoList = async () => {
     navigation.goBack();
@@ -120,7 +139,7 @@ const TransactionAddPage = ({ navigation, route }) => {
               const decimalCount = (sanitizedText.match(/\./g) || []).length;
               // Prevent multiple decimal points
               if (decimalCount > 1) return;
-          
+
               setQty(sanitizedText);
               calculateAmount(rate, sanitizedText);
             }}
@@ -166,10 +185,13 @@ const TransactionAddPage = ({ navigation, route }) => {
         </View>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+        <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={handleSave}>
           <Text style={styles.buttonText}>Save</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.continueButton} onPress={handleBacktoList}>
+        <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
+          <Text style={styles.buttonText}>Delete</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, styles.continueButton]} onPress={handleBacktoList}>
           <Text style={styles.buttonText}>Cancel</Text>
         </TouchableOpacity>
       </View>
@@ -230,19 +252,29 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 20,
   },
-  saveButton: {
-    backgroundColor: '#FF5A5F',
-    flex: 1,
-    marginRight: 10,
-    padding: 15,
+  button: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8, // Works in React Native 0.71+; use margin if older version
+    paddingVertical: 15,
+    paddingHorizontal: 30,
     borderRadius: 5,
   },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#fff",
+    marginLeft: 8, // Space between icon and text
+  },
+  saveButton: {
+    backgroundColor: "#28a745",
+  },
+  deleteButton: {
+    backgroundColor: "#dc3545",
+  },
   continueButton: {
-    backgroundColor: '#444',
-    flex: 1,
-    marginLeft: 10,
-    padding: 15,
-    borderRadius: 5,
+    backgroundColor: "#6c757d",
   },
   buttonText: {
     textAlign: 'center',
