@@ -2,17 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, Text,TouchableOpacity, Button, StyleSheet, Alert } from 'react-native';
 import { addVendor, updateVendor, deleteVendor, getVendors } from '../../services/vendorService';
 
-const VendorAddPage = ({ navigation }) => {
+const VendorAddPage = ({ navigation, route }) => {
+  const [vendorId, setVendorId] = useState('');
   const [vendorName, setVendorName] = useState('');
   const [defaultRate, setDefaultRate] = useState('');
-
+  useEffect(() => {
+      if (route?.params?.vendor) {
+        const vendor = route.params.vendor;
+        setVendorId(vendor.vendorId);
+        setVendorName(vendor.vendor);
+        setDefaultRate(vendor.defaultRate?.toString());
+      }
+    }, []);
+  
   const resetControls = () => {
     setVendorName('');
     setDefaultRate('');
   };
   const handleAdd = async () => {
-    console.log('Adding vendor:', vendorName, defaultRate);
-    await addVendor(vendorName, parseFloat(defaultRate)).catch(error => { console.error('Error adding vendor:', error); });
+    //TODO: Add validation
+    if (vendorId) {
+      await updateVendor(vendorId,vendorName, parseFloat(defaultRate)).catch(error => { console.error('Error updating vendor:', error); });
+    } else {
+      await addVendor(vendorName, parseFloat(defaultRate)).catch(error => { console.error('Error adding vendor:', error); });
+    }
     resetControls();
     navigation.goBack();
   };

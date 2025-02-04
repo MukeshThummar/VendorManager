@@ -19,8 +19,8 @@ const VendorPage = () => {
     setVendors(result);
   };
 
-  const navigateToEdit = (transaction) => {
-    navigation.navigate('EditTransaction', { transaction });
+  const navigateToEdit = (vendor) => {
+    navigation.navigate('VendorAdd', { vendor });
   };
 
   const handleDeleteVendor = async (vendorId) => {
