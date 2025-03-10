@@ -12,6 +12,7 @@ import VendorStack from './stacks/VendorStack';
 import DemoStack from './stacks/DemoStack';
 import TransactionStack from './stacks/TransactionStack';
 import migrationScript from '../services/database';
+import { getCurrentVersion, getStoredVersion } from '@/constants/appDetails';
 
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -25,21 +26,19 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
+    const runMigration = async () => {
+      try {
+        const currentVersion = getCurrentVersion();
+        const storedVersion = await getStoredVersion();
+        const ismigrate = await migrationScript(currentVersion, storedVersion);
+      } catch (error) {
+        console.error('Error on migrating data:', error);
+      } 
+    };
+    runMigration();
     if (loaded) {
       SplashScreen.hideAsync();
     };
-    // const loadMigration = async () => {
-    //   try {
-    //     //const ismigrate = await migrationScript();
-    //   } catch (error) {
-    //     console.error('Error on migrating data:', error);
-    //   } finally {
-    //     if (loaded)  {
-    //       SplashScreen.hideAsync();
-    //     }
-    //   }
-    // };
-    // loadMigration();
   }, [loaded]);
 
   if (!loaded) {
@@ -79,7 +78,7 @@ export default function RootLayout() {
       >
         <Tab.Screen name="Home" component={TransactionStack} options={{ headerShown: false }} />
         <Tab.Screen name="Vendor" component={VendorStack} options={{ headerShown: false }} />
-        <Tab.Screen name="Demo" component={DemoStack} options={{ headerShown: false }} />
+        <Tab.Screen name="Demo" component={DemoStack} options={{ headerShown: false, title: "Setting" }} />
       </Tab.Navigator>
       <StatusBar style="auto" />
     </ThemeProvider>

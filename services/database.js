@@ -1,30 +1,28 @@
+import { setStoredVersion } from '@/constants/appDetails';
 import { executeSql } from './dbService.js';
+import { scripts } from '@/migration/version_1';
 
-const migrationScript = async () => {
-  console.log('Running migration script...');
-  const createVendorsTable = `
-    CREATE TABLE IF NOT EXISTS vendors (
-        vendorId INTEGER PRIMARY KEY AUTOINCREMENT, 
-        vendor TEXT, defaultRate REAL
-    );
-  `;
 
-  const createTransactionsTable = `
-    CREATE TABLE IF NOT EXISTS transactions (
-        transactionId INTEGER PRIMARY KEY AUTOINCREMENT, 
-        vendorId INTEGER, 
-        trndate DATE, 
-        qty REAL, 
-        rate REAL, 
-        amount REAL, 
-        description TEXT, 
-        FOREIGN KEY (vendorId) REFERENCES vendors (vendorId)
-    );  
-  `;
-
-  // Example execution (pseudo-code for database)
-  await executeSql(createVendorsTable);
-  await executeSql(createTransactionsTable);
+const migrationScript = async (currentVersion, storedVersion) => {
+  console.info('Running migration script...', currentVersion, storedVersion);
+  if (currentVersion !== storedVersion) {
+    {
+      switch (currentVersion) {
+        case '1.0.0':
+          for (const script of scripts) {
+            try {
+              const result = await executeSql(script + ';');
+            } catch (error) {
+              console.error('Error executing script:', script, error);
+            }
+          }
+          await setStoredVersion(currentVersion);
+          break;
+        default:
+          break;
+      }
+    }
+  }  
 };
 
 export default migrationScript;

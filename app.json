@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.mukeshthummar_251089.VendorManager"
     },
     "web": {
       "bundler": "metro",
@@ -37,6 +38,15 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "appVersion": "1.0.0",
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "468dc06f-222b-4d99-80b6-630015c4462d"
+      }
     }
   }
 }

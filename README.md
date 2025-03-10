@@ -81,12 +81,18 @@ npm install react-native-fs react-native-sqlite-storage
 npm install @react-native-picker/picker
 npm install @react-native-community/datetimepicker
 npm install react-native-vector-icons
+npm install @react-native-async-storage/async-storage
+
 ```
 ## To reset cache and build
 ```bash
 npm start -- --reset-cache
 ```
-
+## To build APK file
+```bash
+npm install -g eas-cli
+eas build -p android -profile preview
+```
 # TODO
 1. App 
    - Tabs - Trans Vendor Report More
@@ -123,3 +129,25 @@ npm start -- --reset-cache
 4. Reports
       - View Reports
       - Export Reports
+
+
+TO DO
+
+Set Initial Script - Done
+Add Default Vendor Entry - Done
+
+Set Application Icon
+Remove Demo Tab
+Set Proper Tab Navigation 
+Set Proper Month Navigation
+Set Theam
+Set Dashboard - Outstanding Amount
+Add Setting Page
+	Theam
+	Clear Data
+Report
+	View Report with filter
+	Export PDF
+Payment
+Verify Sonar
+Migration with Versioning
