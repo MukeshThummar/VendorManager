@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, TextInput, Button, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, TextInput, Button, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker'; // DateTimePicker import
 import { addTransaction, updateTransaction, deleteTransaction } from '../../services/transactionService';
 import { getDate, getformatedDatefromDate } from '@/constants/methods';
@@ -188,9 +188,11 @@ const TransactionAddPage = ({ navigation, route }) => {
         <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={handleSave}>
           <Text style={styles.buttonText}>Save</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
-          <Text style={styles.buttonText}>Delete</Text>
-        </TouchableOpacity>
+        {transaction?.transactionId && (
+          <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={() => handleDelete(transaction.transactionId)}>
+            <Text style={styles.buttonText}>Delete</Text>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity style={[styles.button, styles.continueButton]} onPress={handleBacktoList}>
           <Text style={styles.buttonText}>Cancel</Text>
         </TouchableOpacity>
@@ -253,12 +255,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   button: {
+    flex: 1, // Make buttons responsive by taking equal space
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 8, // Works in React Native 0.71+; use margin if older version
     paddingVertical: 15,
-    paddingHorizontal: 30,
+    marginHorizontal: 5, // Add spacing between buttons
     borderRadius: 5,
   },
   buttonText: {

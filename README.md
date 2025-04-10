@@ -91,7 +91,9 @@ npm start -- --reset-cache
 ## To build APK file
 ```bash
 npm install -g eas-cli
-eas build -p android -profile preview
+eas build --profile preview --platform android
+eas build --profile development --platform android
+
 ```
 # TODO
 1. App 
@@ -135,8 +137,9 @@ TO DO
 
 Set Initial Script - Done
 Add Default Vendor Entry - Done
+Set Application Icon - Done
+Set Delete Button Condition - Done
 
-Set Application Icon
 Remove Demo Tab
 Set Proper Tab Navigation 
 Set Proper Month Navigation
@@ -151,3 +154,4 @@ Report
 Payment
 Verify Sonar
 Migration with Versioning
+Resolve run twice Initial Script
