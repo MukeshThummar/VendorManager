@@ -25,16 +25,16 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
+  const runMigration = async () => {
+    try {
+      const currentVersion = getCurrentVersion();
+      const storedVersion = await getStoredVersion();
+      const ismigrate = await migrationScript(currentVersion, storedVersion);
+    } catch (error) {
+      console.error('Error on migrating data:', error);
+    } 
+  };
   useEffect(() => {
-    const runMigration = async () => {
-      try {
-        const currentVersion = getCurrentVersion();
-        const storedVersion = await getStoredVersion();
-        const ismigrate = await migrationScript(currentVersion, storedVersion);
-      } catch (error) {
-        console.error('Error on migrating data:', error);
-      } 
-    };
     runMigration();
     if (loaded) {
       SplashScreen.hideAsync();

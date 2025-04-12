@@ -139,6 +139,7 @@ Set Initial Script - Done
 Add Default Vendor Entry - Done
 Set Application Icon - Done
 Set Delete Button Condition - Done
+Resolve run twice Initial Script - Done
 
 Remove Demo Tab
 Set Proper Tab Navigation 
@@ -154,4 +155,3 @@ Report
 Payment
 Verify Sonar
 Migration with Versioning
-Resolve run twice Initial Script
